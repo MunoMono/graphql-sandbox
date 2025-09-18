@@ -17,7 +17,10 @@ import HeaderBar from "./components/HeaderBar.jsx";
 import ApiPage from "./pages/ApiPage.jsx";
 
 // ---- Shared config ----
-const endpoint = "/ch-graphql/";
+// Use Vite dev proxy locally; call real API on GitHub Pages.
+const endpoint = import.meta.env.DEV
+  ? "/ch-graphql/"
+  : "https://api.cooperhewitt.org/";
 const displayEndpoint = "https://api.cooperhewitt.org/";
 
 const DEFAULT_QUERY = `{
@@ -63,9 +66,12 @@ function Sandbox({ theme }) {
     function onLoadPreset(e) {
       const preset = e?.detail;
       if (!preset) return;
-      setMaker(""); setFrom(""); setTo("");
+      setMaker("");
+      setFrom("");
+      setTo("");
       setQuery(preset);
-      setJson(null); setError(null);
+      setJson(null);
+      setError(null);
       // To autorun, uncomment:
       // runQuery(preset);
     }
@@ -110,9 +116,12 @@ function Sandbox({ theme }) {
   }
 
   function clearAll() {
-    setMaker(""); setFrom(""); setTo("");
+    setMaker("");
+    setFrom("");
+    setTo("");
     setQuery(DEFAULT_QUERY);
-    setJson(null); setError(null);
+    setJson(null);
+    setError(null);
   }
 
   return (
