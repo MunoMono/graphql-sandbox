@@ -17,12 +17,12 @@ import HeaderBar from "./components/HeaderBar.jsx";
 import ApiPage from "./pages/ApiPage.jsx";
 
 // ---- Shared config ----
-// Use Vite dev proxy locally; call real API on GitHub Pages.
+// Use Vite dev proxy locally; use Cloudflare Worker in production
 const endpoint = import.meta.env.DEV
   ? "/ch-graphql/"
-  : "https://api.cooperhewitt.org/";
-const displayEndpoint = "https://api.cooperhewitt.org/";
+  : "https://proud-hat-1ce4.gnhkfc.workers.dev/ch-graphql/";
 
+const displayEndpoint = "https://api.cooperhewitt.org/";
 const DEFAULT_QUERY = `{
   object(hasImages:true, size:12, page:1) {
     id
