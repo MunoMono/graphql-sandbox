@@ -11,6 +11,7 @@ import {
   InlineLoading,
   Tag,
   Toggle,
+  Loading,            // ⬅️ overlay loader
 } from "@carbon/react";
 import { Routes, Route, Navigate, Outlet } from "react-router-dom";
 import HeaderBar from "./components/HeaderBar.jsx";
@@ -23,6 +24,7 @@ const endpoint = import.meta.env.DEV
   : "https://proud-hat-1ce4.gnhkfc.workers.dev/ch-graphql/";
 
 const displayEndpoint = "https://api.cooperhewitt.org/";
+
 const DEFAULT_QUERY = `{
   object(hasImages:true, size:12, page:1) {
     id
@@ -66,12 +68,9 @@ function Sandbox({ theme }) {
     function onLoadPreset(e) {
       const preset = e?.detail;
       if (!preset) return;
-      setMaker("");
-      setFrom("");
-      setTo("");
+      setMaker(""); setFrom(""); setTo("");
       setQuery(preset);
-      setJson(null);
-      setError(null);
+      setJson(null); setError(null);
       // To autorun, uncomment:
       // runQuery(preset);
     }
@@ -96,6 +95,7 @@ function Sandbox({ theme }) {
   }, [maker, from, to, query]);
 
   async function runQuery(qStr) {
+    if (loading) return;           // ⬅️ prevent re-entrancy
     setLoading(true);
     setError(null);
     try {
@@ -116,16 +116,21 @@ function Sandbox({ theme }) {
   }
 
   function clearAll() {
-    setMaker("");
-    setFrom("");
-    setTo("");
+    if (loading) return;           // avoid clearing mid-request
+    setMaker(""); setFrom(""); setTo("");
     setQuery(DEFAULT_QUERY);
-    setJson(null);
-    setError(null);
+    setJson(null); setError(null);
   }
 
   return (
     <div data-carbon-density={compact ? "compact" : undefined}>
+      {/* Full-page overlay while querying */}
+      <Loading
+        active={loading}
+        withOverlay
+        description="Querying Cooper Hewitt…"
+      />
+
       <Content className="cds-page" style={{ paddingTop: "4rem" }}>
         <Grid condensed fullWidth className="cds-stack">
           <Column lg={8} md={8} sm={4}>
@@ -138,6 +143,7 @@ function Sandbox({ theme }) {
                   onChange={(e) => setMaker(e.target.value)}
                   placeholder="e.g. Ikko Tanaka (leave blank to use editor)"
                   className="half"
+                  disabled={loading}
                 />
                 <TextInput
                   id="from"
@@ -146,6 +152,7 @@ function Sandbox({ theme }) {
                   onChange={(e) => setFrom(e.target.value)}
                   placeholder="e.g. 1960"
                   className="third"
+                  disabled={loading}
                 />
                 <TextInput
                   id="to"
@@ -154,15 +161,18 @@ function Sandbox({ theme }) {
                   onChange={(e) => setTo(e.target.value)}
                   placeholder="e.g. 1969"
                   className="third"
+                  disabled={loading}
                 />
               </div>
 
               <div className="cds-actions">
                 <ButtonSet>
-                  <Button onClick={() => runQuery()} kind="primary">
+                  <Button onClick={() => runQuery()} kind="primary" disabled={loading}>
                     {loading ? <InlineLoading description="Running..." /> : "Execute query"}
                   </Button>
-                  <Button onClick={clearAll} kind="secondary">Clear</Button>
+                  <Button onClick={clearAll} kind="secondary" disabled={loading}>
+                    Clear
+                  </Button>
                 </ButtonSet>
 
                 <Toggle
@@ -173,6 +183,7 @@ function Sandbox({ theme }) {
                   toggled={compact}
                   onToggle={(val) => setCompact(val)}
                   aria-label="Toggle compact density"
+                  disabled={loading}
                 />
 
                 <Tag type="cool-gray">POST {displayEndpoint}</Tag>
@@ -186,8 +197,14 @@ function Sandbox({ theme }) {
                   defaultLanguage="graphql"
                   value={composedQuery}
                   theme={monacoTheme}
-                  onChange={(v) => setQuery(v ?? "")}
-                  options={{ minimap: { enabled: false }, fontSize: 14, tabSize: 2, automaticLayout: true }}
+                  onChange={(v) => !loading && setQuery(v ?? "")}
+                  options={{
+                    minimap: { enabled: false },
+                    fontSize: 14,
+                    tabSize: 2,
+                    automaticLayout: true,
+                    readOnly: loading,            // ⬅️ lock editor while loading
+                  }}
                 />
               </div>
             </div>

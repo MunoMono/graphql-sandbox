@@ -72,8 +72,7 @@ git commit -m "Deploy build"
 git subtree push --prefix dist origin gh-pages
 ```
 
-Live deployment: [https://munomono.github.io/graphql-sandbox](https://munomono.github.io/graphql-sandbox)
-
+**Live demo:** [https://munomono.github.io/graphql-sandbox/](https://munomono.github.io/graphql-sandbox/)
 ---
 
 ## 💡 Try it Out
