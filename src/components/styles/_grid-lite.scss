@@ -1,0 +1,18 @@
+/* Global centered container (Carbon-ish) */
+.container,
+.site-container {
+  max-width: 1312px; /* Carbon lg container */
+  margin-left: auto;
+  margin-right: auto;
+
+  padding-left: var(--cds-spacing-05); /* ~1rem */
+  padding-right: var(--cds-spacing-05);
+
+  @media (min-width: 672px) {
+    padding-left: var(--cds-spacing-07);  /* ~2rem */
+    padding-right: var(--cds-spacing-07);
+  }
+}
+
+/* Wrapper for custom grid sections */
+.grid-section { composes: container; } /* if your build doesn't support composes, just duplicate rules */

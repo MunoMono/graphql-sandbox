@@ -1,58 +1,90 @@
 // src/components/HeaderBar.jsx
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
+  Theme,
   Header,
   HeaderName,
-  HeaderGlobalBar,
-  HeaderGlobalAction,
   HeaderNavigation,
   HeaderMenuItem,
+  HeaderMenuButton,
+  SideNav,
+  SideNavItems,
+  SideNavLink,
+  HeaderGlobalBar,
+  HeaderGlobalAction,
 } from "@carbon/react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Moon, Sun } from "@carbon/icons-react";
-import { Link, useLocation } from "react-router-dom";
 
-function HeaderBar({ theme, toggleTheme }) {
+export default function HeaderBar({ theme, toggleTheme }) {
+  const [isSideNavExpanded, setIsSideNavExpanded] = useState(false);
   const isDark = theme === "g90";
-  const base = import.meta.env.BASE_URL || "/";
-  const { pathname } = useLocation();
+
+  // Close the mobile sidenav on route change
+  const location = useLocation();
+  useEffect(() => {
+    setIsSideNavExpanded(false);
+  }, [location.pathname]);
+
+  const navigate = useNavigate();
 
   return (
-    <Header aria-label="Graham Newman RCA PhD carbon + GraphQL + Cooper Hewitt sandbox">
-      <HeaderName href={base} prefix="">
-        Graham Newman RCA PhD carbon + GraphQL + Cooper Hewitt sandbox
-      </HeaderName>
+    <Theme theme="g100">
+      <Header
+        aria-label="GraphQL Sandbox"
+        onOverlayClick={() => setIsSideNavExpanded(false)}
+      >
+        {/* Mobile hamburger */}
+        <HeaderMenuButton
+          aria-label="Open menu"
+          isCollapsible
+          isActive={isSideNavExpanded}
+          onClick={() => setIsSideNavExpanded((v) => !v)}
+        />
 
-      <HeaderNavigation aria-label="Primary">
-        <HeaderMenuItem
-          as={Link}
-          to="/"
-          isActive={pathname === "/"}
-          aria-current={pathname === "/" ? "page" : undefined}
-        >
-          Sandbox
-        </HeaderMenuItem>
-        <HeaderMenuItem
-          as={Link}
-          to="/api"
-          isActive={pathname.startsWith("/api")}
-          aria-current={pathname.startsWith("/api") ? "page" : undefined}
-        >
-          The API
-        </HeaderMenuItem>
-      </HeaderNavigation>
+        {/* Brand */}
+        <HeaderName as={Link} to="/" prefix="Graham Newman RCA PhD">
+          GraphQL sandbox
+        </HeaderName>
 
-      <HeaderGlobalBar>
-        <HeaderGlobalAction
-          aria-label={isDark ? "Switch to light theme" : "Switch to dark theme"}
-          onClick={toggleTheme}
-          tooltipAlignment="end"
-          title={isDark ? "Light mode" : "Dark mode"}
+        {/* Desktop nav */}
+        <HeaderNavigation aria-label="Main navigation">
+          <HeaderMenuItem as={Link} to="/">Home</HeaderMenuItem>
+          <HeaderMenuItem as={Link} to="/try">Try it out</HeaderMenuItem>
+          <HeaderMenuItem as={Link} to="/snippets">Snippets</HeaderMenuItem>
+        </HeaderNavigation>
+
+        {/* Right-side actions (theme toggle) */}
+        <HeaderGlobalBar>
+          <HeaderGlobalAction
+            aria-label={isDark ? "Switch to light theme" : "Switch to dark theme"}
+            tooltipAlignment="end"
+            onClick={toggleTheme}
+          >
+            {isDark ? <Sun size={20} /> : <Moon size={20} />}
+          </HeaderGlobalAction>
+        </HeaderGlobalBar>
+
+        {/* Mobile SideNav */}
+        <SideNav
+          aria-label="Mobile navigation"
+          expanded={isSideNavExpanded}
+          isPersistent={false}
+          onOverlayClick={() => setIsSideNavExpanded(false)}
         >
-          {isDark ? <Sun size={20} aria-hidden="true" /> : <Moon size={20} aria-hidden="true" />}
-        </HeaderGlobalAction>
-      </HeaderGlobalBar>
-    </Header>
+          <SideNavItems>
+            <SideNavLink as={Link} to="/" onClick={() => navigate("/")}>
+              Home
+            </SideNavLink>
+            <SideNavLink as={Link} to="/try" onClick={() => navigate("/try")}>
+              Try it out
+            </SideNavLink>
+            <SideNavLink as={Link} to="/snippets" onClick={() => navigate("/snippets")}>
+              Snippets
+            </SideNavLink>
+          </SideNavItems>
+        </SideNav>
+      </Header>
+    </Theme>
   );
 }
-
-export default HeaderBar;

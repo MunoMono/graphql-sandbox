@@ -1,17 +1,15 @@
 // src/main.jsx
 import React from "react";
-import { createRoot } from "react-dom/client";
-import { BrowserRouter } from "react-router-dom";
-import App from "./App.jsx";
+import ReactDOM from "react-dom/client";
+import { HashRouter } from "react-router-dom";
 import "@carbon/styles/css/styles.css";
 import "./components/styles/styles.scss";
+import App from "./App.jsx";
 
-const base = import.meta.env.BASE_URL || "/";
-
-createRoot(document.getElementById("root")).render(
+ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <BrowserRouter basename={base}>
+    <HashRouter>
       <App />
-    </BrowserRouter>
+    </HashRouter>
   </React.StrictMode>
 );

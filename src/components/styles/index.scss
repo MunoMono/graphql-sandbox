@@ -1,0 +1,34 @@
+/* src/components/styles/index.scss */
+
+/* 1) Pick a Carbon theme */
+@use '@carbon/styles/scss/themes';                // exposes themes.$white, $g10, $g90, $g100
+@use '@carbon/styles/scss/theme' with (
+  $theme: themes.$g90                              // ← choose themes.$g10 for light, etc.
+);
+
+/* 2) Pull in Carbon styles after the theme is set */
+@use '@carbon/styles/scss/styles';
+
+/* 3) Your project overrides/extensions */
+@use './styles.scss';
+
+/* 4) Small helpers shared across pages */
+.hide-on-sm {
+  @media (max-width: 672px) { display: none !important; }
+}
+
+.app-footer {
+  padding: 2rem 0 3rem;
+  border-top: 1px solid var(--cds-border-subtle);
+  color: var(--cds-text-secondary);
+
+  &__inner {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+}
+
+#main-content { min-height: 60vh; }
