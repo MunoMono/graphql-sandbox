@@ -18,21 +18,28 @@ export default function Home() {
 
   return (
     <>
+      {/* Page header */}
       <div className="page-header">
-        <Grid fullWidth>
-          <Column lg={10} md={8} sm={4}>
-            <Heading type="heading-03">Cooper Hewitt · GraphQL Sandbox</Heading>
-          </Column>
-        </Grid>
+        <div className="container">
+          <Heading type="heading-03">Cooper Hewitt · GraphQL Sandbox</Heading>
+        </div>
       </div>
 
+      {/* Page content */}
       <section className="docs-panel-band">
         <div className="docs-panel-band__inner">
-          <Grid fullWidth>
+          <Grid fullWidth className="docs-content__grid">
             <Column lg={10} md={8} sm={4}>
               <div className="cds-card">
                 <div className="carbon-markdown">
-                  <ReactMarkdown>{md}</ReactMarkdown>
+                  <ReactMarkdown
+                    components={{
+                      ul: ({ node, ...props }) => <ul {...props} />,
+                      li: ({ node, ...props }) => <li {...props} />,
+                    }}
+                  >
+                    {md}
+                  </ReactMarkdown>
                 </div>
               </div>
             </Column>

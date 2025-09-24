@@ -9,7 +9,6 @@ import {
   ButtonSet,
   InlineLoading,
   Tag,
-  Toggle,
   Loading,
   Theme,
 } from "@carbon/react";
@@ -36,10 +35,11 @@ export default function TryItOut() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Keep Monaco in sync with Carbon theme
+  // Detect Carbon theme from <html>
   const [isDark, setIsDark] = useState(
     document.documentElement.classList.contains("cds-theme-g90")
   );
+
   useEffect(() => {
     const mo = new MutationObserver(() =>
       setIsDark(document.documentElement.classList.contains("cds-theme-g90"))
@@ -50,13 +50,14 @@ export default function TryItOut() {
     });
     return () => mo.disconnect();
   }, []);
-  const monacoTheme = isDark ? "vs-dark" : "light";
+
+  // Pick matching Monaco theme
+  const monacoTheme = isDark ? "vs-dark" : "vs-light";
 
   const [query, setQuery] = useState(DEFAULT_QUERY);
   const [loading, setLoading] = useState(false);
   const [json, setJson] = useState(null);
   const [error, setError] = useState(null);
-  const [compact, setCompact] = useState(false);
 
   // 1) Accept legacy broadcast if both pages are mounted
   useEffect(() => {
@@ -66,8 +67,6 @@ export default function TryItOut() {
       setQuery(preset);
       setJson(null);
       setError(null);
-      // Optionally auto-run:
-      // runQuery(preset);
     }
     window.addEventListener("ch:loadPreset", onLoadPreset);
     return () => window.removeEventListener("ch:loadPreset", onLoadPreset);
@@ -80,10 +79,7 @@ export default function TryItOut() {
       setQuery(preset);
       setJson(null);
       setError(null);
-      // clear preset from history so refreshes don't reapply it
       navigate(location.pathname, { replace: true, state: null });
-      // Optionally auto-run:
-      // runQuery(preset);
     }
   }, [location.state, location.pathname, navigate]);
 
@@ -126,7 +122,8 @@ export default function TryItOut() {
         </Grid>
       </div>
 
-      <Theme theme="g10">
+      {/* Theme now follows dark/light */}
+      <Theme theme={isDark ? "g90" : "g10"}>
         <section className="docs-panel-band">
           <div className="docs-panel-band__inner">
             <Loading
@@ -135,34 +132,36 @@ export default function TryItOut() {
               description="Querying Cooper Hewitt…"
             />
 
-            <Grid condensed fullWidth className="cds-stack" style={{ marginTop: "1rem" }}>
+            <Grid
+              condensed
+              fullWidth
+              className="cds-stack"
+              style={{ marginTop: "1rem" }}
+            >
+              {/* Left column: editor + controls */}
               <Column lg={8} md={8} sm={4}>
                 <div className="cds-card">
                   <div className="cds-actions">
                     <ButtonSet>
-                      <Button onClick={() => runQuery()} kind="primary" disabled={loading}>
+                      <Button
+                        onClick={() => runQuery()}
+                        kind="primary"
+                        disabled={loading}
+                      >
                         {loading ? (
                           <InlineLoading description="Running..." />
                         ) : (
                           "Execute query"
                         )}
                       </Button>
-                      <Button onClick={clearAll} kind="secondary" disabled={loading}>
+                      <Button
+                        onClick={clearAll}
+                        kind="secondary"
+                        disabled={loading}
+                      >
                         Clear
                       </Button>
                     </ButtonSet>
-
-                    <Toggle
-                      id="density-toggle"
-                      labelText="Compact"
-                      size="sm"
-                      hideLabel={false}
-                      toggled={compact}
-                      onToggle={(val) => setCompact(val)}
-                      aria-label="Toggle compact density"
-                      disabled={loading}
-                    />
-
                     <Tag type="cool-gray">POST {displayEndpoint}</Tag>
                   </div>
                 </div>
@@ -187,6 +186,7 @@ export default function TryItOut() {
                 </div>
               </Column>
 
+              {/* Right column: results + raw JSON */}
               <Column lg={8} md={8} sm={4}>
                 <div className="cds-card">
                   <h3 className="cds-heading">Results</h3>
@@ -265,13 +265,31 @@ export default function TryItOut() {
                             : "";
 
                         return (
-                          <figure key={o.id} className="cds-figure cds-card-tile">
+                          <figure
+                            key={o.id}
+                            className="cds-figure cds-card-tile"
+                          >
                             {src ? (
-                              <img
-                                src={src.startsWith("http") ? src : `https:${src}`}
-                                alt={titleText}
-                                className="cds-thumb"
-                              />
+                              <a
+                                href={
+                                  Array.isArray(o.multimedia) &&
+                                  o.multimedia[0]?.large?.url
+                                    ? o.multimedia[0].large.url
+                                    : src
+                                }
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                <img
+                                  src={
+                                    src.startsWith("http")
+                                      ? src
+                                      : `https:${src}`
+                                  }
+                                  alt={titleText}
+                                  className="cds-thumb"
+                                />
+                              </a>
                             ) : (
                               <div className="cds-thumb cds-thumb--placeholder">
                                 no image

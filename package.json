@@ -5,10 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build --emptyOutDir",
     "preview": "vite preview",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist"
+    "pages:prepare": "cp dist/index.html dist/404.html && touch dist/.nojekyll",
+    "predeploy": "npm run build && npm run pages:prepare",
+    "deploy": "gh-pages -d dist -m \"deploy: $(date -u +'%Y-%m-%dT%H:%MZ')\""
   },
   "dependencies": {
     "@carbon/icons-react": "^11.67.0",

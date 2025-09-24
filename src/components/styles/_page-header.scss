@@ -1,0 +1,40 @@
+.page-header {
+  --height: 20rem;
+  background-color: #000;
+  border-bottom: 1px solid #393939;
+  color: #fff;
+
+  display: flex;
+  justify-content: center;
+  height: var(--height);
+  width: 100%;
+  position: relative;
+  overflow: visible; /* 🔑 allow inner content to be seen */
+}
+
+.page-header__inner,
+.page-header > .container {
+  max-width: g.$container-max;
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+  padding-left: g.$container-pad-sm;
+  padding-right: g.$container-pad-sm;
+
+  /* 🔑 Add bottom padding equal to header spacing */
+  padding-bottom: $spacing-09;
+
+  @include breakpoint('md') {
+    padding-left: g.$container-pad-md;
+    padding-right: g.$container-pad-md;
+  }
+}
+
+.page-header__inner h1,
+.page-header > .container h1 {
+  margin: 0;
+  font-size: clamp(3rem, 6vw, 4rem);
+  font-weight: 200;
+  color: #fff;
+  line-height: 1.2;
+}

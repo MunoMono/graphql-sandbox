@@ -11,6 +11,7 @@
 
 /* 3) Your project overrides/extensions */
 @use './styles.scss';
+@use './page-header';
 
 /* 4) Small helpers shared across pages */
 .hide-on-sm {
